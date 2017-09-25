@@ -14,11 +14,7 @@ class Thermo(object):
 
     def __init__(t):
 
-        # constants, adjusted from english -> metric (pg. 602, rocket prop.)
-        #t.C0 = 0.036
-        #t.C1 = 0.8
-        #t.C2 = 0.23
-
+        # constants, adjusted from english -> metric [2]
         t.C0 = 0.047
         t.C1 = 4/5
         t.C2 = 0.153
@@ -47,7 +43,7 @@ class Thermo(object):
         Ac     = input['Ac']
         L      = input['L']
         p0     = input['p0']          # ox feed pressure
-        p1     = input['p1_t']        # chamber pressure
+        p1     = input['p1_t']        # chamber pressure target
         mdot_o = input['v_dot']*rho_o # kg / sec
 
         #$ freestream propellant mass flow rate
@@ -59,12 +55,16 @@ class Thermo(object):
         #$ page 602, rocket propulsion elements
         #$ and page 19, reference 2:
         #$ units = m3/kg * (kg/m2s)*1/5 * (kg/m2s)*4/5 = m/s
-        regression = t.C0*(G**t.C1)/(rho_f*Pr**t.C2)*(mu/L)**(t.C3)*(B**t.C4)
+        t.regression = t.C0*(G**t.C1)/(rho_f*Pr**t.C2)*(mu/L)**(t.C3)*(B**t.C4)
 
-        mdot_f = input['A_burn'] * rho_f * regression  # m2*kg/m3*m/s = kg/s
+        # m2*kg/m3*m/s = kg/s
+        mdot_f = input['A_burn'] * rho_f * t.regression
 
         # determine what the "modeled" OF is. Seems to trend higher than truth
         OF = mdot_o / mdot_f
+
+        t.mdot_f = mdot_f
+        t.mdot_o = mdot_o
 
         thermo['mdot'] = mdot_o + mdot_f
         thermo['At']   = input['At']

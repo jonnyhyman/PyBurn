@@ -23,7 +23,7 @@
     - Efficiency is somewhat "over-estimated". Actual / Pred. ISP = 200s / 238s
     - Regression model holds some error, as seen by the fact that the O / F
         ratio input to the model does not equal the output O / F calculated
-        by the regression model
+        by the regression model, when against test data
 
     Program execution is roughly:
         x = Injector()
@@ -34,7 +34,7 @@
 
 import numpy as np
 
-from Inject import qv, injector # CURRENTLY DEPRECATED IN FAVOR OF [2] DATA
+from Inject import qv, injector
 from Thermo import Thermo
 from Nozzle import Nozzle
 
@@ -42,32 +42,32 @@ thermo = Thermo()
 nozzle = Nozzle()
 
 parameters = {
-                #'v_dot'   : qv,     # m3/sec
-                'v_dot'   : 0.15,          # m3/sec, injector vol. flow rate
+                'v_dot'   : 0,             # m3/sec, tuned for O / F ratio
                 'rho_f'   : 975,           # kg/m3, fuel density
                 'rho_o'   : 1.98,          # kg/m3, oxidizer density
                 'p0'      : 5200*1e3,      # pascals, oxidizer feed pressure
-                'p1_t'    : 2500*1e3,      # pascals, chamber pressure target
-                'p3'      : 85000,         # pascals
-                'R'       : 0.0127,        # meters, port diameter
-                'Rt'      : 0.0084,        # meters, throat diameter
-                'L'       : 0.5715,        # meters
+                'p1_t'    : 1500*1e3,      # pascals, chamber pressure target
+                'p3'      : 95380,         # pascals, atmospheric pressure
+                'R'       : 0.010,         # meters, port diameter
+                'Rt'      : 0.010,         # meters, throat diameter
+                'L'       : 0.095,         # meters
              }
 
 parameters['A_burn'] = (2 * np.pi * parameters['R']) * parameters['L']
 parameters['At']     = np.pi * (parameters['Rt'])**2  # throat area
 parameters['Ac']     = np.pi * (parameters['R'])**2  # fuel xsctn chamber area
 
-parameters['Cd_ox']  = 0.40  # injector discharge coeff
-parameters['A_ox']   = 0.115*1e-4  # oxidizer discharge area
+parameters['Cd_ox'] = injector['Cd']
+parameters['A_ox']  = np.pi * injector['d']**2
 
-#parameters['Cd_ox']  = injector['Cd']
-#parameters['Cd_ox']  = np.pi * injector['d']**2
-
-# Drives the entire shebang
-parameters['OF'] = 5
+# Drives the entire shebang. Tune for desired thrust
+parameters['OF'] = 0.95
 
 if __name__ == '__main__':
+
+    # Tune vdot until desired ox/fuel ratio is approximately met
+    while abs(parameters['OF'] - thermo.evaluate(parameters)['OF']) > 0.1:
+        parameters['v_dot'] += 0.0001
 
     therm = thermo.evaluate(parameters)
     F, v2, isp, mdot = nozzle.evaluate(therm)
@@ -79,4 +79,11 @@ if __name__ == '__main__':
     print('  M Dot : ', mdot, 'kg/s')
     print('  P1    : ', therm['p1']*1e-3, 'kPa')
     print('  P1/P3 : ', therm['p1']/therm['p3'])
-    print('  O / F : ', therm['OF'])
+    print('  O / F : ', parameters['OF'],'=>',therm['OF'])
+    print('  T0    : ', therm['T0'], 'K')
+    print('  R Dot : ', thermo.regression*1e3, 'mm/s')
+    print()
+    print('  REQUIREMENTS')
+    print('  V Dot     : ', parameters['v_dot'], 'm3/s')
+    print('  M Dot Ox  :', thermo.mdot_o, 'kg/s')
+    print('  M Dot H2O : ', parameters['v_dot']*1000, 'kg/s')
