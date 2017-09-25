@@ -57,12 +57,12 @@ class Thermo(object):
         B = t.cp * (T0-t.Tfuel) / t.hv
 
         #$ page 602, rocket propulsion elements
-        #$ and page 19, reference 0:
+        #$ and page 19, reference 2:
         #$ units = m3/kg * (kg/m2s)*1/5 * (kg/m2s)*4/5 = m/s
         regression = t.C0*(G**t.C1)/(rho_f*Pr**t.C2)*(mu/L)**(t.C3)*(B**t.C4)
 
         mdot_f = input['A_burn'] * rho_f * regression  # m2*kg/m3*m/s = kg/s
-        
+
         # determine what the "modeled" OF is. Seems to trend higher than truth
         OF = mdot_o / mdot_f
 

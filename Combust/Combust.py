@@ -30,12 +30,11 @@
         y includes x
         z = Thermo(y)
         show Nozzle(z)
-
 """
 
 import numpy as np
 
-from Inject import qv, injector # CURRENTLY DEPRECATED IN FAVOR OF [0] DATA
+from Inject import qv, injector # CURRENTLY DEPRECATED IN FAVOR OF [2] DATA
 from Thermo import Thermo
 from Nozzle import Nozzle
 
