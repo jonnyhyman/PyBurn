@@ -1,4 +1,7 @@
 """
+    NOTE:
+    Utilize as a standalone calculator for injector - not tied to Combust.py
+
     Inputs:
 
         - Orifice diameter (d)
@@ -13,7 +16,6 @@
         - Nitrous mass flow rate
 
     Based on: https://en.wikipedia.org/wiki/Orifice_plate
-
 """
 import numpy as np
 
@@ -35,6 +37,5 @@ injector = {
         'd'  : 1.5e-3,   # hole diameter, m
         'dP' : 172e3,    # delta pressure, Pa
         'Cd' : 0.82,     # discharge coefficient, fit to measured dm/dt
+        'md' : 1.3,      # kg/s
       }
-
-qv = 0.10942 / injector['rho'] # kg/s / kg/m3 = m3/s
