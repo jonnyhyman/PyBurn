@@ -3,10 +3,10 @@
 A Hybrid Rocket Motor Propulsion Model - Python
 
 + Combust.py : The primary run script, where all experimental / geometrical parameters are input
-+ Inject.py : An orifice-plate model based injector flow rate calculator
 + Thermo.py : Thermodynamical + some thermochemical calculations to determine combustion parameters
 + Nozzle.py : Isentropic flow through nozzles based on [5]. Determines thrust and efficiencies
 + Properties.py : Approximations of key thermochemical variables with respect to oxidizer/fuel ratio. Taken from [2], Fig 4
++ Inject.py : An orifice-plate model based injector flow rate calculator
 
 Currently, only supports analysis of ABS/N2O rocket motors.
 
